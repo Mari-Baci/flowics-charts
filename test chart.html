@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Animated Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="myChart"></canvas>
+
+<script>
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  const myChart = new Chart(ctx, {
+    type: 'bar', // you can change this to 'line', 'pie', etc.
+    data: {
+      labels: ['Team A', 'Team B', 'Team C'],
+      datasets: [{
+        label: 'Votes',
+        data: [12, 19, 3],
+        backgroundColor: ['red', 'blue', 'green'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      animation: {
+        duration: 1000,
+        easing: 'easeOutBounce'
+      },
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
