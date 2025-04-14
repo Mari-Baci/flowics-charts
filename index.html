@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Position Monitor Chart</title>
+  <title>LULU Price Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2>Consumer Staples Position Monitor</h2>
+  <h2>LULU Stock Price</h2>
   <canvas id="myChart"></canvas>
 
   <script>
-    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?pm_all=N&run_type=position-monitor-data&key=&pm_sectors=Consumer%20Staples,&pm_analysts=Daniel%20Biolsi")
+    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?tickers=LULU,TJX,BURL&run_type=get-tickers&key=AIzaSyCYmSIazdL0lhshpnpYzjoEWnZxr3uDOYQ")
       .then(response => response.json())
       .then(data => {
-        const companies = data.PositionMonitor.map(item => item.name);
-        const signals = data.PositionMonitor.map(item => item.position_signal);
+        const tickerInfo = data.tickers[0]; // only one ticker in this API call
+        const companyName = tickerInfo.company_name;
+        const price = tickerInfo.price;
 
         const ctx = document.getElementById('myChart').getContext('2d');
         const myChart = new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: companies,
+            labels: [companyName],
             datasets: [{
-              label: 'Position Signal',
-              data: signals,
+              label: 'Stock Price (USD)',
+              data: [price],
               borderWidth: 1
             }]
           },
           options: {
             scales: {
               y: {
-                beginAtZero: true,
-                max: 1 // since the signal looks like it's between 0 and 1
+                beginAtZero: false
               }
             }
           }
