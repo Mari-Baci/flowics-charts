@@ -1,41 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Position Monitor Chart</title>
+  <meta charset="UTF-8">
+  <title>TSLA Performance Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f7f7f7;
+    }
+    canvas {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <h2>Consumer Staples Position Monitor</h2>
-  <canvas id="myChart"></canvas>
 
-  <script>
-    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?pm_all=N&run_type=position-monitor-data&key=AIzaSyCYmSIazdL0lhshpnpYzjoEWnZxr3uDOYQ&pm_sectors=Consumer%20Staples,&pm_analysts=Daniel%20Biolsi")
-      .then(response => response.json())
-      .then(data => {
-        const companies = data.PositionMonitor.map(item => item.name);
-        const signals = data.PositionMonitor.map(item => item.position_signal);
+<canvas id="tslaChart" width="600" height="400"></canvas>
 
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: companies,
-            datasets: [{
-              label: 'Position Signal',
-              data: signals,
-              borderWidth: 1
-            }]
+<script>
+  async function renderTslaChart() {
+    const apiUrl = 'https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service';
+    const queryParams = new URLSearchParams({
+      pm_all: 'N',
+      run_type: 'position-monitor-data',
+      key: 'AIzaSyCYmSIazdL0lhshpnpYzjoEWnZxr3uDOYQ',
+      pm_sectors: 'Industrials',
+      pm_analysts: 'Jay Van Sciver'
+    }).toString();
+
+    try {
+      const response = await fetch(`${apiUrl}?${queryParams}`);
+      if (!response.ok) throw new Error('API request failed.');
+
+      const data = await response.json();
+      const tsla = data.find(d => d.ticker === 'TSLA');
+
+      if (!tsla) {
+        alert('No TSLA data found.');
+        return;
+      }
+
+      const performanceData = [
+        tsla.absolute_performance,
+        tsla.relative_performance
+      ];
+
+      const bgColors = performanceData.map(v =>
+        v >= 0 ? 'rgba(75, 192, 192, 0.7)' : 'rgba(255, 99, 132, 0.7)'
+      );
+
+      const borderColors = performanceData.map(v =>
+        v >= 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'
+      );
+
+      const ctx = document.getElementById('tslaChart').getContext('2d');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Absolute Performance', 'Relative Performance'],
+          datasets: [{
+            label: `${tsla.company} (${tsla.ticker})`,
+            data: performanceData,
+            backgroundColor: bgColors,
+            borderColor: borderColors,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: `TSLA Performance as of ${new Date(tsla.last_published * 1000).toISOString().split('T')[0]}`
+            },
+            tooltip: {
+              callbacks: {
+                label: context => `${context.label}: ${context.parsed.y.toFixed(2)}%`
+              }
+            }
           },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 1 // since the signal looks like it's between 0 and 1
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Performance (%)'
               }
             }
           }
-        });
+        }
       });
-  </script>
+
+    } catch (err) {
+      console.error('Chart render error:', err);
+      alert('Something went wrong loading the chart.');
+    }
+  }
+
+  renderTslaChart();
+</script>
+
 </body>
 </html>
