@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LULU Price Chart</title>
+  <title>Multi-Ticker Price Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2>LULU Stock Price</h2>
+  <h2>Stock Prices: LULU, TSLA, AAPL</h2>
   <canvas id="myChart"></canvas>
 
   <script>
-    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?tickers=LULU,TJX,BURL&run_type=get-tickers&key=AIzaSyCYmSIazdL0lhshpnpYzjoEWnZxr3uDOYQ")
+    // API with multiple tickers
+    const url = "https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?tickers=LULU,TSLA,AAPL&run_type=get-tickers&key=AIzaSyCYmSIazdL0lhshpnpYzjoEWnZxr3uDOYQ";
+
+    fetch(url)
       .then(response => response.json())
       .then(data => {
-        const tickerInfo = data.tickers[0]; // only one ticker in this API call
-        const companyName = tickerInfo.company_name;
-        const price = tickerInfo.price;
+        const tickers = data.tickers;
 
+        // Extract labels and data for chart
+        const labels = tickers.map(t => t.company_name);
+        const prices = tickers.map(t => t.price);
+
+        // Render Chart
         const ctx = document.getElementById('myChart').getContext('2d');
         const myChart = new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: [companyName],
+            labels: labels,
             datasets: [{
               label: 'Stock Price (USD)',
-              data: [price],
+              data: prices,
               borderWidth: 1
             }]
           },
