@@ -9,7 +9,7 @@
   <canvas id="myChart"></canvas>
 
   <script>
-    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?pm_all=N&run_type=position-monitor-data&key=&pm_sectors=Consumer%20Staples,&pm_analysts=Daniel%20Biolsi")
+    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?pm_all=N&run_type=position-monitor-data&key=AIzaSyCYmSIazdL0lhshpnpYzjoEWnZxr3uDOYQ&pm_sectors=Consumer%20Staples,&pm_analysts=Daniel%20Biolsi")
       .then(response => response.json())
       .then(data => {
         const companies = data.PositionMonitor.map(item => item.name);
