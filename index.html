@@ -1,53 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Animated Chart</title>
+  <title>My First Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      margin: 0;
-      background: transparent;
-    }
-    canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
 </head>
 <body>
+  <h2>My Cool Bar Chart</h2>
+  <canvas id="myChart"></canvas>
 
-<canvas id="myChart"></canvas>
+  <script>
+    const ctx = document.getElementById('myChart').getContext('2d');
 
-<script>
-  const ctx = document.getElementById('myChart').getContext('2d');
-
-  const myChart = new Chart(ctx, {
-    type: 'bar', // you can change this to 'line', 'pie', etc.
-    data: {
-      labels: ['Team A', 'Team B', 'Team C'],
-      datasets: [{
-        label: 'Votes',
-        data: [12, 19, 3],
-        backgroundColor: ['red', 'blue', 'green'],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      animation: {
-        duration: 1000,
-        easing: 'easeOutBounce'
+    const myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: '# of Votes',
+          data: [12, 19, 3, 5, 2, 3],
+          borderWidth: 1
+        }]
       },
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
       }
-    }
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
