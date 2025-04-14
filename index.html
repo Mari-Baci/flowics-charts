@@ -1,81 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TSLA Stock Price - March 2025</title>
+  <title>Position Monitor Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2>TSLA Stock Price - March 2025</h2>
-  <canvas id="tslaChart" width="800" height="400"></canvas>
+  <h2>Consumer Staples Position Monitor</h2>
+  <canvas id="myChart"></canvas>
 
   <script>
-    // TSLA closing prices for March 2025
-    const labels = [
-      'Mar 3', 'Mar 4', 'Mar 5', 'Mar 6', 'Mar 7',
-      'Mar 10', 'Mar 11', 'Mar 12', 'Mar 13', 'Mar 14',
-      'Mar 17', 'Mar 18', 'Mar 19', 'Mar 20', 'Mar 21',
-      'Mar 24', 'Mar 25', 'Mar 26', 'Mar 27', 'Mar 28',
-      'Mar 31'
-    ];
+    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?pm_all=N&run_type=position-monitor-data&key=&pm_sectors=Consumer%20Staples,&pm_analysts=Daniel%20Biolsi")
+      .then(response => response.json())
+      .then(data => {
+        const companies = data.PositionMonitor.map(item => item.name);
+        const signals = data.PositionMonitor.map(item => item.position_signal);
 
-    const data = [
-      284.65, 272.04, 279.10, 263.45, 262.67,
-      222.15, 230.58, 248.09, 240.68, 249.98,
-      238.01, 225.31, 235.86, 236.26, 248.71,
-      278.39, 288.14, 272.06, 273.13, 263.55,
-      259.16
-    ];
-
-    const ctx = document.getElementById('tslaChart').getContext('2d');
-    const tslaChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'TSLA Closing Price (USD)',
-          data: data,
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          fill: true,
-          tension: 0.1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'TSLA Stock Price - March 2025'
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: companies,
+            datasets: [{
+              label: 'Position Signal',
+              data: signals,
+              borderWidth: 1
+            }]
           },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-          },
-        },
-        interaction: {
-          mode: 'nearest',
-          axis: 'x',
-          intersect: false
-        },
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Date'
-            }
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Price (USD)'
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 1 // since the signal looks like it's between 0 and 1
+              }
             }
           }
-        }
-      }
-    });
+        });
+      });
   </script>
 </body>
 </html>
-
