@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My First Chart</title>
+  <title>Position Monitor Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2>My Cool Bar Chart</h2>
+  <h2>Consumer Staples Position Monitor</h2>
   <canvas id="myChart"></canvas>
 
   <script>
-    const ctx = document.getElementById('myChart').getContext('2d');
+    fetch("https://ds-service-gateway-e0hm7n5x.uk.gateway.dev/ds_service?pm_all=N&run_type=position-monitor-data&key=&pm_sectors=Consumer%20Staples,&pm_analysts=Daniel%20Biolsi")
+      .then(response => response.json())
+      .then(data => {
+        const companies = data.PositionMonitor.map(item => item.name);
+        const signals = data.PositionMonitor.map(item => item.position_signal);
 
-    const myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: companies,
+            datasets: [{
+              label: 'Position Signal',
+              data: signals,
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 1 // since the signal looks like it's between 0 and 1
+              }
+            }
           }
-        }
-      }
-    });
+        });
+      });
   </script>
 </body>
 </html>
